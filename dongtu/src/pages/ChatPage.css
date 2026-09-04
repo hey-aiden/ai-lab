@@ -1,0 +1,269 @@
+/* 浅色主题 AI 聊天页 */
+:root {
+  --bg: #ffffff;
+  --bg-sidebar: #f2f2f2;
+  --bg-hover: #ececec;
+  --bg-user-bubble: #e3f0ff;
+  --bg-assistant-bubble: #f4f4f4;
+  --border: #e5e5e5;
+  --text: #1f1f1f;
+  --text-secondary: #6b6b6b;
+  --accent: #2563eb;
+  --radius: 10px;
+}
+
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── 顶部:品牌 + 模态 tab ─────────────────────────── */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 20px;
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.chat-header__brand {
+  font-weight: 700;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.modality-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.modality-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 100%;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  border-bottom: 2px solid transparent;
+}
+
+.modality-tab:hover {
+  color: var(--text);
+}
+
+.modality-tab.is-active {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}
+
+.modality-tab__icon {
+  font-size: 15px;
+}
+
+/* ── 主体:侧边栏 + 内容 ───────────────────────────── */
+.chat-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 左侧会话列表 */
+.conversation-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.new-chat-btn {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.new-chat-btn:hover {
+  background: var(--bg-hover);
+}
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.conversation-list__empty {
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.conversation-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+}
+
+.conversation-item:hover {
+  background: var(--bg-hover);
+}
+
+.conversation-item.is-active {
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.conversation-item__title {
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conversation-item__meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 中央内容 */
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message-list--empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.message-list__hint {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 760px;
+  width: 100%;
+}
+
+.message--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message--assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message__role {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.message__bubble {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.message--user .message__bubble {
+  background: var(--bg-user-bubble);
+}
+
+.message--assistant .message__bubble {
+  background: var(--bg-assistant-bubble);
+}
+
+/* 底部输入 */
+.message-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.message-input__field {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  max-height: 160px;
+}
+
+.message-input__field:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.message-input__send {
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.message-input__send:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.message-input__send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
