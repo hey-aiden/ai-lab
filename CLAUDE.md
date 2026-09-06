@@ -11,6 +11,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 两者目前尚未打通:`dongtu` 是纯前端(mock 数据 + 占位回复),后续再接入 `langchain-ai` 的真实接口。
 
+## 文档规范
+
+- 所有文档类内容(说明、调研、配置差异对比、整理笔记等)统一放到仓库根目录 `docs/` 下,按主题命名(如 `docs/uv-init.md`)。
+- 不在各子项目目录内散落文档;各子项目的 `README.md` 只保留该子项目自身的简介与入口说明。
+
 ## 常用命令
 
 ### `dongtu/`(前端)

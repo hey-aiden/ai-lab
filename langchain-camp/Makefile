@@ -1,0 +1,2 @@
+start:
+    uv run start
