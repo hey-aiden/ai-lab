@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 仓库概览
 
-`ai-lab` 是一个 monorepo,包含两个相互独立的子项目,各自有独立的依赖与锁文件,没有共享的 workspace 或根 package 配置:
+`ai-lab` 是一个 monorepo,包含三个相互独立的子项目,各自有独立的依赖与锁文件,没有共享的 workspace 或根 package 配置:
 
-- **`dongtu/`** — 多模态 AI 聊天前端(React 19 + Create React App,react-router-dom v6)。
-- **`langchain-ai/`** — AI 对话后端(FastAPI + LangChain + DeepSeek + MySQL),提供 OpenAI 兼容的 `/v1/chat/completions` SSE 流式接口。
+- **`dongtu-front/`** — 多模态 AI 聊天前端(React 19 + Create React App,react-router-dom v6)。目录名已从 `dongtu/` 改为 `dongtu-front/`,但 npm 包名仍是 `dongtu`。
+- **`agent-server/`** — AI 对话后端(FastAPI + LangChain + DeepSeek + MySQL),提供 OpenAI 兼容的 `/v1/chat/completions` SSE 流式接口。目录名已从 `langchain-ai/` 改为 `agent-server/`。
+- **`langchain-camp/`** — LangChain 学习/实验项目(基于 LangChain + DeepSeek + LangGraph),当前是占位实现,后续用于学习与验证 LangChain 用法。
 
-两者目前尚未打通:`dongtu` 是纯前端(mock 数据 + 占位回复),后续再接入 `langchain-ai` 的真实接口。
+`dongtu-front` 与 `agent-server` 目前尚未打通:`dongtu-front` 是纯前端(mock 数据 + 占位回复),后续再接入 `agent-server` 的真实接口;`langchain-camp` 独立于前两者,自行迭代。
 
 ## 文档规范
 
@@ -18,12 +19,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 常用命令
 
-### `dongtu/`(前端)
+### `dongtu-front/`(前端)
 
 包管理器是 **pnpm**(仓库里同时存在 `package-lock.json` 与 `pnpm-lock.yaml`,以 pnpm 为准)。
 
 ```bash
-cd dongtu
+cd dongtu-front
 pnpm install            # 安装依赖
 pnpm start              # 开发服务器 http://localhost:3000
 pnpm build              # 生产构建到 build/
@@ -31,21 +32,33 @@ CI=true pnpm test       # 跑测试(CI=true 使其单次运行,非 watch 模式)
 CI=true pnpm test App.test.js   # 只跑单个测试文件
 ```
 
-### `langchain-ai/`(后端)
+### `agent-server/`(后端)
 
-包管理器是 **uv**,Python 3.11(`.python-version` 固定)。
+包管理器是 **uv**,Python 3.11(`.python-version` 固定),src 布局(`src/app/`)。
 
 ```bash
-cd langchain-ai
+cd agent-server
 uv sync                 # 安装依赖
 cp env.example .env     # 配置 API_KEY_DEEPSEEK / DB_URL 等(含密钥,已 gitignore)
-uv run dev              # 启动服务 127.0.0.1:8000(等价 make run)
-uv run pytest           # 跑测试(等价 make test;用 SQLite + 假模型,不依赖外部服务)
+uv run dev              # 启动服务 127.0.0.1:8000
+uv run pytest           # 跑测试(用 SQLite + 假模型,不依赖外部服务)
 ```
+
+### `langchain-camp/`(LangChain 学习/实验项目)
+
+包管理器是 **uv**,Python 3.11,扁平布局(`app/` 在根目录,构建配置见 `docs/uv-init.md`)。
+
+```bash
+cd langchain-camp
+uv sync                 # 安装依赖
+uv run start            # 运行入口 app.main:main(当前打印占位 "hello word")
+```
+
+配置通过 `.env` 提供 `API_KEY_DEEPSEEK` / `MODEL_DEEPSEEK` / `TEMPERATURE`(含密钥,已 gitignore,无 env.example)。
 
 ## 架构
 
-### `dongtu/` — 前端
+### `dongtu-front/` — 前端
 
 - 路由(react-router-dom v6):`/` 与 `/chat` 重定向到 `/chat/text`,`/chat/:modalityId` 渲染 `ChatPage`;`src/index.js` 用 `<BrowserRouter>` 包裹 `<App />`。
 - **模态(tab)与 URL 绑定**,会话选中态放在组件内部 state(不在 URL)。
@@ -55,7 +68,7 @@ uv run pytest           # 跑测试(等价 make test;用 SQLite + 假模型,不�
   - `src/data/modalities.js` — 模态定义(text 文本对话 / image 文生图 / audio 语音)、mock 会话、`PLACEHOLDER_REPLY` 占位回复。
 - 后续接入真实模型时,替换 `src/data/modalities.js` 里的 mock 数据与占位回复;每个模态的 AI 能力按模块独立迭代。
 
-### `langchain-ai/` — 后端
+### `agent-server/` — 后端
 
 分层架构,每层只依赖下一层:
 
@@ -69,4 +82,13 @@ api/(HTTP 层) → services/(编排) → memory/ llm/ schemas/ → models/(ORM) 
 - 配置:`src/app/config.py` 用 pydantic-settings 读 `.env`,字段与环境变量一一对应(`api_key_deepseek` ↔ `API_KEY_DEEPSEEK` 等)。
 - ORM 表:`ConversationModel`(`table_conversation`)、`ChatMessageModel`(`table_chat_message`),删除会话级联删消息。
 
-更详细的架构、API 与网关对接说明见 `langchain-ai/README.md`。
+更详细的架构、API 与网关对接说明见 `agent-server/README.md`。
+
+### `langchain-camp/` — LangChain 学习/实验项目
+
+- 入口脚本 `start` → `app.main:main`,当前仅打印占位 `"hello word"`,真实 LLM 调用已注释。
+- 关键文件:
+  - `app/main.py` — 入口,调用 `app.model.in_deep_seek()`。
+  - `app/config.py` — 用 python-dotenv 读 `.env`,把 DeepSeek 配置装进 `global_config` 字典。
+  - `app/model/deep_seek.py` — 模型调用封装,`ChatDeepSeek` 相关代码已注释,待接入真实密钥后启用。
+- 扁平布局 + 项目名(`langchain-camp`)≠ 包目录(`app`),因此需要 `[tool.uv.build-backend]` 的 `module-name` / `module-root`,由来详见 `docs/uv-init.md`。
