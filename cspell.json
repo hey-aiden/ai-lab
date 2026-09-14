@@ -1,8 +1,10 @@
 {
 	"words": [
+		"aiden",
 		"dotenv",
 		"deepseek",
 		"langchain",
-		"langgraph"
+		"langgraph",
+		"checkpointer"
 	]
 }
