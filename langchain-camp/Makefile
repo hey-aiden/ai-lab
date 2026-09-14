@@ -1,2 +1,2 @@
 start:
-    uv run start
+	uv run start
