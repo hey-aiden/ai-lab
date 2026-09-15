@@ -4,6 +4,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 from app.config import global_config
 
+from .runnable_chain import runnable_call
 from .stream_output import stream_output
 from .structure_output import CourseInfo, structure_output
 from .text_input import process_text
@@ -71,9 +72,13 @@ def llm_stream():
 def llm_structure():
     system_prompt = "你是菜鸟教程 RUNOOB 的课程助手，从用户描述中提取课程信息。"
     agent = create_chat_with_structure(system_prompt, CourseInfo)
-
     structured_data = structure_output(agent)
     print(structured_data)
+
+
+def llm_runnable():
+    llm = load_llm()
+    runnable_call(llm)
 
 
 def llm_tool():
@@ -84,4 +89,4 @@ def llm_tool():
 
 
 def in_deep_seek():
-    llm_structure()
+    llm_runnable()
