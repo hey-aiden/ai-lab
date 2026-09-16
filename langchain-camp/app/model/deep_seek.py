@@ -10,6 +10,7 @@ from .core import (
     runnable_call,
     stream_output,
     structure_output,
+    tool_call,
 )
 from .text_input import process_text
 
@@ -85,11 +86,14 @@ def llm_runnable():
 
 
 def llm_tool():
-    system_prompt = "你是一个实用工具助手"
-    tools = []  # 在这里添加你的工具列表
-    agent = create_agent_with_tools(system_prompt, tools)
-    process_text(agent)
+    llm = load_llm()
+    tool_call(llm)
+
+    # system_prompt = "你是一个实用工具助手"
+    # tools = []  # 在这里添加你的工具列表
+    # agent = create_agent_with_tools(system_prompt, tools)
+    # process_text(agent)
 
 
 def in_deep_seek():
-    llm_runnable()
+    llm_tool()

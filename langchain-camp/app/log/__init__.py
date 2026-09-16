@@ -1,3 +1,3 @@
-from .log import log_info
+from .log import log_info, log_msg
 
-__all__ = ["log_info"]
+__all__ = ["log_info", "log_msg"]
