@@ -12,6 +12,7 @@ from .core import (
     structure_output,
     tool_call,
 )
+from .graph import create_workflow
 from .text_input import process_text
 
 
@@ -95,5 +96,9 @@ def llm_tool():
     # process_text(agent)
 
 
+def make_graph():
+    create_workflow()
+
+
 def in_deep_seek():
-    llm_tool()
+    make_graph()

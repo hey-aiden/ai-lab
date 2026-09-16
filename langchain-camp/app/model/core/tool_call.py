@@ -126,3 +126,4 @@ def tool_call(llm):
         "origin_result": final,
     }
     log_msg(msg_data)
+    print("看看消息类型：", type(HumanMessage)) # <class 'pydantic._internal._model_construction.ModelMetaclass'>
