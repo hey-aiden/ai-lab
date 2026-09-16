@@ -2,17 +2,19 @@ from langchain.agents import create_agent
 from langchain_deepseek import ChatDeepSeek
 from langgraph.checkpoint.memory import InMemorySaver
 
+from app.chat import run_chat
 from app.config import global_config
 
 from .core import (
     CourseInfo,
+    get_weather,
     langchain_memory,
     runnable_call,
     stream_output,
     structure_output,
     tool_call,
 )
-from .graph import create_workflow
+from .graph import create_workflow, human_in_loop
 from .text_input import process_text
 
 
@@ -100,5 +102,10 @@ def make_graph():
     create_workflow()
 
 
+def llm_chat():
+    llm = load_llm()
+    run_chat(llm, tools=[get_weather])
+
+
 def in_deep_seek():
-    make_graph()
+    human_in_loop()
