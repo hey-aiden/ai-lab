@@ -4,11 +4,14 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 from app.config import global_config
 
-from .runnable_chain import runnable_call
-from .stream_output import stream_output
-from .structure_output import CourseInfo, structure_output
+from .core import (
+    CourseInfo,
+    langchain_memory,
+    runnable_call,
+    stream_output,
+    structure_output,
+)
 from .text_input import process_text
-from .use_memory import langchain_memory
 
 
 def load_llm():

@@ -5,6 +5,10 @@
 		"deepseek",
 		"langchain",
 		"langgraph",
-		"checkpointer"
+		"checkpointer",
+		"ainvoke",
+		"runnable",
+		"abatch",
+		"astream",
 	]
 }
