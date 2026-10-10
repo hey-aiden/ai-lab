@@ -10,5 +10,6 @@
 		"runnable",
 		"abatch",
 		"astream",
+		"modelcontextprotocol",
 	]
 }

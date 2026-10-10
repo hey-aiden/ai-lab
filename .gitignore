@@ -80,3 +80,6 @@ Desktop.ini
 
 # ---------- 日志 ----------
 *.log
+
+# ---------- Claude Code ----------
+.mcp.json
