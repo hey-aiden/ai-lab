@@ -77,10 +77,78 @@ claude mcp add weather -- node /Users/aiden/Documents/code/ai-lab/mcp/build/inde
 
 改完重启 Claude Desktop。
 
+### 3.4 mcpServers 配置字段详解
+
+`.mcp.json`(及 Claude Desktop 的 `claude_desktop_config.json`)里,每个 server 的字段按传输类型分两类。
+
+**stdio(本地进程)字段:**
+
+| 字段 | 必填 | 含义 |
+|------|------|------|
+| `type` | ❌ | `"stdio"`;省略即按 stdio 处理 |
+| `command` | ✅ | 启动命令:`node` / `npx` / 可执行文件路径 |
+| `args` | ❌ | 命令参数数组 |
+| `env` | ❌ | 传给进程的环境变量 map |
+| `timeout` | ❌ | 单次调用超时(ms) |
+
+**远程(HTTP / SSE / WebSocket)字段:**
+
+| 字段 | 必填 | 含义 |
+|------|------|------|
+| `type` | ✅(有 `url` 时必须) | `"http"` / `"sse"` / `"ws"`(别名 `"streamable-http"` = `"http"`) |
+| `url` | ✅ | 服务地址 |
+| `headers` | ❌ | 请求头,如 `{ "Authorization": "Bearer ..." }` |
+
+> 注意:`type` 的值是 `"http"`,**不是** `"streamableHttp"`(驼峰写法无效);有 `url` 却没写 `type` 会被当作 stdio 而跳过并报错。
+
+**配置作用域 scope:**
+
+| scope | 生效范围 | 是否共享给团队 | 存储位置 |
+|-------|---------|--------------|---------|
+| `local`(默认) | 仅当前项目 | 否 | `~/.claude.json` |
+| `project` | 仅当前项目 | 是(随 VCS) | 项目根 `.mcp.json` |
+| `user` | 你的所有项目 | 否 | `~/.claude.json` |
+
+优先级:local → project → user → plugin → claude.ai connectors。
+
 ## 4. 验证与使用
 
-1. **验证连接**:Claude Code 中敲 `/mcp`,看到 `weather` 且状态为 ✓ connected;或用 `claude mcp list` / `claude mcp get weather` 查看健康检查结果。
-2. **使用**:连接后 `get-alerts` 对模型可用,例如说「用 get-alerts 查一下 CA 的天气告警」,模型会以 `state: "CA"` 调用工具并返回告警数据。
+### 4.1 触发方式:直接用自然语言
+
+连接后**不需要任何特殊语法**,像平时一样说就行,模型会自动判断并调用 MCP 工具。例如:
+
+- 「用 get-alerts 查一下 CA 的天气告警」→ 模型调用 `get-alerts(state="CA")`
+- 「看看服务器暴露了哪些资源」→ 模型调用 `resources/list`
+- 「给我一份 NY 的天气报告模板」→ 模型调用 `prompts/get`
+
+工具对模型可见后,会像内置工具一样被自动调度。
+
+> 进阶:在权限规则 / `allowed-tools` / 子代理 `tools` 配置里引用某个工具时,用命名约定 `mcp__<server名>__<工具名>`,例如 `mcp__weather__get-alerts`(日常使用无需关心)。
+
+### 4.2 查看与管理:`/mcp` 与 `claude mcp` 命令
+
+- **`/mcp`**:在 Claude Code 里查看各 server 状态并管理。常见状态:
+  - `✔ Connected` 已连接
+  - `⏸ Pending approval` 待批准(项目级 `.mcp.json` 首次会这样,需批准一次)
+  - `✘ Failed to connect` 连接失败
+  - `! Needs authentication` 需要登录(OAuth)
+  - `⊘ Disabled for this project` 已禁用
+  - 菜单可 Disable / Reconnect / 重新认证;`/mcp reconnect all` 重试所有失败项。
+
+- **CLI 命令**:
+
+```bash
+claude mcp list                  # 列出所有配置的 server 及其状态
+claude mcp get weather           # 查看某个 server 详情 / 健康检查
+claude mcp remove weather        # 移除
+claude mcp login weather         # OAuth 登录(HTTP/SSE 需要时)
+claude mcp logout weather
+claude mcp add-from-claude-desktop  # 从 Claude Desktop 导入
+```
+
+### 4.3 验证连接
+
+`claude mcp get weather` 会做健康检查并返回连接状态与工具数量;`/mcp` 面板同样显示每个 server 的工具数(若声明了工具却一个都没暴露,面板会提示)。
 
 ## 5. 注意事项
 
