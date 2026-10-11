@@ -39,6 +39,15 @@ export function createServer(): McpServer {
     //                           并在调用前做参数校验(不合法会直接报错,不进 handler)
     //   - config.outputSchema:  结构化的输出 schema(可选),声明后可在返回里用 structuredContent
     //   - config.annotations:   语义标注(可选),见下方 ToolAnnotations 各字段含义
+    //
+    // 触发方式(所有工具通用):
+    //   1) 客户端启动时经 tools/list 拿到本工具的 name/description/inputSchema;
+    //   2) 模型根据 description 判断当前任务是否需要它,需要时发起 tools/call,
+    //      入参必须满足 inputSchema,否则 SDK 在进入 handler 前就报错;
+    //   3) handler 返回 content(供模型阅读),可附 structuredContent / isError。
+    //
+    // 作用: 查询美国某州的天气预警(示例固定返回一条 Heat Advisory)。
+    // 触发: 用户问「某州天气/预警」时,模型传 state(2 位州代码,如 CA/NY)。
     server.registerTool(
         'get-alerts',
         {
@@ -92,6 +101,10 @@ export function createServer(): McpServer {
     // ── 3. 带结构化输出的工具示例 ─────────────────────────────────
     // 声明 outputSchema 后,可在返回值里带 structuredContent(结构化对象),
     // 便于客户端/上层代码直接取字段,而不必解析 content 里的文本。
+    //
+    // 作用: 按体重(kg)与身高(m)计算 BMI,返回数值 + 分类(偏低/正常/超重)。
+    // 触发: 用户给出体重、身高时,模型传 weightKg / heightM(均需正数,
+    //       否则 inputSchema 校验失败,不会进入 handler)。
     server.registerTool(
         'calculate-bmi',
         {

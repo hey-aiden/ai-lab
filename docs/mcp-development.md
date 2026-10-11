@@ -34,6 +34,30 @@ new McpServer(serverInfo, options?)
 | `capabilities` | 显式声明能力 `{ tools? / resources? / prompts? / logging? ... }`;高层 `McpServer` 会按注册情况**自动补全**,通常无需手动声明 |
 | `maxToolInputElements` | 限制单次 `tools/call` 入参的元素个数,防超大入参 |
 
+### 如何查看 serverInfo
+
+`serverInfo` 不是客户端配置出来的,而是 server 在 `initialize` 握手时上报的——`name` / `version` / `title` 来自 `new McpServer({...})`。查看方式:
+
+1. **直接探 stdio**(最完整,能看到原始字段):
+
+```bash
+cd mcp
+printf '%s\n' \
+  '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"probe","version":"0.0.0"}}}' \
+  | node build/index.js 2>/dev/null
+```
+
+返回节选:
+
+```json
+{ "serverInfo": { "name": "weather", "version": "1.0.0", "title": "Weather MCP Server" }, "capabilities": { ... }, "instructions": "..." }
+```
+
+2. **`claude mcp get weather`**:查看连接状态、健康检查、工具数(通常含上报的 `name` / `version`)。
+3. **`/mcp`**:显示状态图标 + 工具数(这里显示的 `weather` 是配置里的 key,不一定是 server 上报的 `name`)。
+
+> 原理:stdio 下 server 从 stdin 读 JSON-RPC 消息、把响应写到 stdout。上面命令就是手动往 stdin 喂一行 `initialize` 请求,再看 stdout 的响应。
+
 ## 3. registerTool(name, config, handler)
 
 ### config 字段
